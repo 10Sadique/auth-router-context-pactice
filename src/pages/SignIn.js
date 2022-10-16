@@ -1,27 +1,49 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/UserContext';
 
 const SignIn = () => {
+    const { signIn, signInWithGoogle } = useContext(AuthContext);
+    const navigate = useNavigate();
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const form = e.target;
-
         const email = form.email.value;
         const password = form.password.value;
-
         console.log(email, password);
+
+        signIn(email, password)
+            .then((result) => {
+                const user = result.user;
+                console.log(user);
+                form.reset();
+                navigate('/');
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    };
+
+    const handleGoogleSignIn = () => {
+        signInWithGoogle()
+            .then((result) => {
+                const user = result.user;
+                console.log(user);
+            })
+            .catch((err) => console.error(err));
     };
 
     return (
         <div>
-            <div className="hero min-h-screen bg-base-200">
-                <div className="hero-content flex-col">
+            <div className="min-h-screen hero bg-base-200">
+                <div className="flex-col hero-content">
                     <div className="text-center lg:text-left">
-                        <h1 className="text-5xl font-bold mb-6">
+                        <h1 className="mb-6 text-5xl font-bold">
                             Please Sign In Now!
                         </h1>
                     </div>
-                    <div className="card flex-shrink-0 w-full max-w-sm lg:max-w-xl shadow-2xl bg-base-100">
+                    <div className="flex-shrink-0 w-full max-w-sm shadow-2xl card lg:max-w-xl bg-base-100">
                         <form onSubmit={handleSubmit} className="card-body">
                             <div className="form-control">
                                 <label className="label">
@@ -55,10 +77,25 @@ const SignIn = () => {
                                     </Link>
                                 </label>
                             </div>
-                            <div className="form-control mt-6">
+                            <div className="mt-6 form-control">
                                 <button className="btn btn-primary">
                                     Login
                                 </button>
+                                <div className="divider">or</div>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={handleGoogleSignIn}
+                                        className="flex-1 btn btn-accent"
+                                    >
+                                        Google
+                                    </button>
+                                    <button
+                                        onClick={handleGoogleSignIn}
+                                        className="flex-1 btn btn-secondary"
+                                    >
+                                        Github
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>

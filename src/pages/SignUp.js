@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../contexts/UserContext';
 
 const SignUp = () => {
+    const { createUser, signInWithGoogle } = useContext(AuthContext);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const form = e.target;
@@ -9,20 +12,37 @@ const SignUp = () => {
         const name = form.name.value;
         const email = form.email.value;
         const password = form.password.value;
-
         console.log(name, email, password);
+
+        createUser(email, password)
+            .then((result) => {
+                const user = result.user;
+                console.log(user);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    };
+
+    const handleGoogleSignIn = () => {
+        signInWithGoogle()
+            .then((result) => {
+                const user = result.user;
+                console.log(user);
+            })
+            .catch((err) => console.error(err));
     };
 
     return (
         <div>
-            <div className="hero min-h-screen bg-base-200">
-                <div className="hero-content flex-col">
+            <div className="min-h-screen hero bg-base-200">
+                <div className="flex-col hero-content">
                     <div className="text-center lg:text-left">
-                        <h1 className="text-5xl font-bold mb-6">
+                        <h1 className="mb-6 text-5xl font-bold">
                             Please Sign Up Now!
                         </h1>
                     </div>
-                    <div className="card flex-shrink-0 w-full max-w-sm lg:max-w-md shadow-2xl bg-base-100">
+                    <div className="flex-shrink-0 w-full max-w-sm shadow-2xl card lg:max-w-md bg-base-100">
                         <form onSubmit={handleSubmit} className="card-body">
                             <div className="form-control">
                                 <label className="label">
@@ -68,9 +88,19 @@ const SignUp = () => {
                                     </Link>
                                 </label>
                             </div>
-                            <div className="form-control mt-6">
-                                <button className="btn btn-primary">
+                            <div className="mt-6 form-control">
+                                <button
+                                    className="btn btn-primary"
+                                    type="submit"
+                                >
                                     Register
+                                </button>
+                                <div className="divider">or</div>
+                                <button
+                                    onClick={handleGoogleSignIn}
+                                    className="btn btn-accent"
+                                >
+                                    Google
                                 </button>
                             </div>
                         </form>
